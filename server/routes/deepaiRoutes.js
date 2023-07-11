@@ -1,12 +1,13 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
-import deepai from 'deepai';
+// import deepai from 'deepai';
+import axios from 'axios';
 
 dotenv.config();
 
 const router = express.Router();
 
-deepai.setApiKey(process.env.DEEPAI_API_KEY);
+// deepai.setApiKey(process.env.DEEPAI_API_KEY);
 
 router.route('/').get((req, res) => {
     res.send('Hello from deepaiRoutes!');
@@ -15,10 +16,16 @@ router.route('/').get((req, res) => {
 router.route('/').post(async (req, res) => {
     const { prompt } = req.body;
     try {
-        var resp = await deepai.callStandardApi("text2img", {
+        const response = await axios.post('https://api.deepai.org/api/text2img', {
             text: prompt,
             grid_size: '1',
-        });
+        }, {
+            headers: {
+                'api-key': process.env.DEEPAI_API_KEY,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        const resp = response.data;
         console.log(resp);
         // var resp = {
         //     id: '51087d1a-374c-481f-9d18-f6aed93b34af',
